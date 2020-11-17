@@ -1,8 +1,54 @@
-import Vue from 'vue'
-import App from './App.vue'
+import Vue from 'vue';
+import Vuelidate from 'vuelidate';
+import Paginate from 'vuejs-paginate';
+import VueMeta from 'vue-meta'
+import App from './App.vue';
+import router from './router';
+import store from '@/store/index';
+import dateFilter from '@/filters/date.filter';
+import currencyFilter from '@/filters/currency.filter';
+import localizeFilter from '@/filters/localize.filter';
+import Loader from '@/components/app/Loader';
+import messagePlugin from '@/utils/message.plugin';
+import titlePlugin from '@/utils/title.plugin';
+import tooltipDirective from '@/directives/tooltip.directive';
+import 'materialize-css/dist/js/materialize.min';
 
-Vue.config.productionTip = false
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/database';
 
-new Vue({
-  render: h => h(App),
-}).$mount('#app')
+Vue.config.productionTip = false;
+
+Vue.use(messagePlugin);
+Vue.use(titlePlugin);
+Vue.use(Vuelidate);
+Vue.use(VueMeta);
+Vue.filter('date', dateFilter);
+Vue.filter('currency', currencyFilter);
+Vue.filter('localize', localizeFilter);
+Vue.directive('tooltip', tooltipDirective);
+Vue.component('Loader', Loader);
+Vue.component('Paginate', Paginate);
+
+firebase.initializeApp({
+    apiKey: 'AIzaSyCdHu1UG-sjX8eJTbsM0OOvA6auyCOGyWk',
+    authDomain: 'vue-crm-3375b.firebaseapp.com',
+    databaseURL: 'https://vue-crm-3375b.firebaseio.com',
+    projectId: 'vue-crm-3375b',
+    storageBucket: 'vue-crm-3375b.appspot.com',
+    messagingSenderId: '711693158440',
+    appId: '1:711693158440:web:c21620b805f5a809778d1d'
+});
+
+let app;
+
+firebase.auth().onAuthStateChanged(() => {
+    if (!app) {
+        app = new Vue({
+            router,
+            store,
+            render: h => h(App)
+        }).$mount('#app');
+    }
+});
